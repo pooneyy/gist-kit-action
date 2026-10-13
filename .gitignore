@@ -1,5 +1,6 @@
 # Project
 *.bat
+*.txt
 
 # Dependency directory
 node_modules
