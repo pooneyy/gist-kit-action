@@ -15,9 +15,9 @@
  *   - 未匹配上的会被警告并跳过。如果没有任何文件匹配成功，则让 action
  *     失败
  */
-import * as core from '@actions/core'
 import { mkdir, writeFile } from 'node:fs/promises'
 import * as path from 'node:path'
+import type { Logger } from '../logger.js'
 import { apiFetch, basenameOf, downloadRaw } from '../utils.js'
 import type {
   GistApiResponse,
@@ -25,12 +25,15 @@ import type {
   ResolvedInputs
 } from '../types.js'
 
-export async function run(inputs: ResolvedInputs): Promise<OperationResult> {
+export async function run(
+  inputs: ResolvedInputs,
+  log: Logger
+): Promise<OperationResult> {
   if (!inputs.gistId) {
     throw new Error('`gist-id` is required for the download operation')
   }
 
-  core.debug(`Fetching metadata for Gist ${inputs.gistId} (anonymous)`)
+  log.debug(`Fetching metadata for Gist ${inputs.gistId} (anonymous)`)
 
   // 拉取 gist 元数据。API 允许匿名调用
   const metaResponse = await apiFetch(
@@ -59,14 +62,14 @@ export async function run(inputs: ResolvedInputs): Promise<OperationResult> {
   for (const { destination, name } of desired) {
     const entry = meta.files[name]
     if (!entry) {
-      core.warning(
+      log.warn(
         `File "${name}" was requested but does not exist in Gist ${inputs.gistId}; skipping`
       )
       continue
     }
     matched += 1
-    core.debug(`Downloading ${name} → ${destination}`)
-    const raw = await downloadRaw(entry.raw_url)
+    log.debug(`Downloading ${name} → ${destination}`)
+    const raw = await downloadRaw(entry.raw_url, 1, log)
     const body = await raw.text()
     await mkdir(path.dirname(destination), { recursive: true })
     await writeFile(destination, body, 'utf8')
@@ -78,7 +81,7 @@ export async function run(inputs: ResolvedInputs): Promise<OperationResult> {
     )
   }
 
-  core.info(
+  log.info(
     `Downloaded ${matched} file(s) from Gist ${inputs.gistId}` +
       (matched < desired.length ? ` (${desired.length - matched} skipped)` : '')
   )

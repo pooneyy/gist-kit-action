@@ -251,4 +251,32 @@ describe('main.ts dispatcher', () => {
     expectFailedWith('GitHub API request failed')
     expectFailedWith('404')
   })
+
+  it('log-level=error suppresses debug and info calls', async () => {
+    setInput('operation', 'create')
+    setInput('token', 'gh_test')
+    setInput('filenames', '/tmp/note.md')
+    setInput('log-level', 'error')
+    mockFetch(201, { id: 'new-gist-id' })
+
+    await run()
+    // At error level, both debug and info are filtered out.
+    expect(core.debug).not.toHaveBeenCalled()
+    expect(core.info).not.toHaveBeenCalled()
+    // The action itself still succeeded — only logging was suppressed.
+    expect(core.setOutput).toHaveBeenCalledWith('gist-id', 'new-gist-id')
+    expect(core.setFailed).not.toHaveBeenCalled()
+  })
+
+  it('log-level=debug forwards debug calls too', async () => {
+    setInput('operation', 'create')
+    setInput('token', 'gh_test')
+    setInput('filenames', '/tmp/note.md')
+    setInput('log-level', 'debug')
+    mockFetch(201, { id: 'new-gist-id' })
+
+    await run()
+    expect(core.debug).toHaveBeenCalled()
+    expect(core.info).toHaveBeenCalledTimes(1)
+  })
 })

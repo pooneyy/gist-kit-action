@@ -2,11 +2,14 @@
  * `delete-files` 操作：以 files: { "name1": null, "name2": null, ... }
  * 调用 PATCH /gists/{gist_id}
  */
-import * as core from '@actions/core'
+import type { Logger } from '../logger.js'
 import { apiFetch } from '../utils.js'
 import type { OperationResult, ResolvedInputs } from '../types.js'
 
-export async function run(inputs: ResolvedInputs): Promise<OperationResult> {
+export async function run(
+  inputs: ResolvedInputs,
+  log: Logger
+): Promise<OperationResult> {
   if (!inputs.gistId) {
     throw new Error('`gist-id` is required for the delete-files operation')
   }
@@ -24,7 +27,7 @@ export async function run(inputs: ResolvedInputs): Promise<OperationResult> {
   const files: Record<string, null> = {}
   for (const name of names) files[name] = null
 
-  core.debug(
+  log.debug(
     `Deleting ${names.length} file(s) from Gist ${inputs.gistId}: ${names.join(', ')}`
   )
 
@@ -33,6 +36,6 @@ export async function run(inputs: ResolvedInputs): Promise<OperationResult> {
     token: inputs.token,
     body: { files }
   })
-  core.info(`Deleted ${names.length} file(s) from Gist ${inputs.gistId}`)
+  log.info(`Deleted ${names.length} file(s) from Gist ${inputs.gistId}`)
   return {}
 }

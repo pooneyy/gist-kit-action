@@ -5,6 +5,7 @@
 import * as core from '@actions/core'
 import { Globber } from '@actions/glob'
 import * as path from 'node:path'
+import type { Logger } from './logger.js'
 import type { Operation, ResolvedInputs } from './types.js'
 import { OPERATIONS } from './types.js'
 
@@ -150,8 +151,19 @@ export async function apiFetch(
  *
  * 将"最后一次尝试"计为第 (n+1) 次，因此 `RAW_DOWNLOAD_RETRIES = 3`
  * 表示"总共最多 3 次尝试"，而不是"在首次尝试之外再重试 3 次"。
+ *
+ * `log` 可选；未传时使用 `core.debug` 直写，行为与历史版本一致
  */
-export async function downloadRaw(url: string, attempt = 1): Promise<Response> {
+export async function downloadRaw(
+  url: string,
+  attempt = 1,
+  log: Logger = {
+    debug: core.debug,
+    info: core.info,
+    warn: core.warning,
+    error: core.error
+  }
+): Promise<Response> {
   let response: Response
   try {
     response = await doFetch(url, {
@@ -160,7 +172,7 @@ export async function downloadRaw(url: string, attempt = 1): Promise<Response> {
   } catch (err) {
     if (attempt < RAW_DOWNLOAD_RETRIES) {
       await sleep(RAW_DOWNLOAD_RETRY_DELAY_MS)
-      return downloadRaw(url, attempt + 1)
+      return downloadRaw(url, attempt + 1, log)
     }
     throw new Error(
       `Network error downloading ${url} after ${RAW_DOWNLOAD_RETRIES} attempts: ${
@@ -170,11 +182,11 @@ export async function downloadRaw(url: string, attempt = 1): Promise<Response> {
     )
   }
   if (!response.ok && attempt < RAW_DOWNLOAD_RETRIES) {
-    core.debug(
+    log.debug(
       `raw download attempt ${attempt} failed (${response.status}); retrying in ${RAW_DOWNLOAD_RETRY_DELAY_MS}ms`
     )
     await sleep(RAW_DOWNLOAD_RETRY_DELAY_MS)
-    return downloadRaw(url, attempt + 1)
+    return downloadRaw(url, attempt + 1, log)
   }
   if (!response.ok) {
     await raiseForResponse(response, `GET ${url}`)

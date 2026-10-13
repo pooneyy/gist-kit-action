@@ -31,6 +31,7 @@ export function resetInputs(): void {
 export const debug = jest.fn<typeof core.debug>()
 export const info = jest.fn<typeof core.info>()
 export const warning = jest.fn<typeof core.warning>()
+export const notice = jest.fn<typeof core.notice>()
 export const error = jest.fn<typeof core.error>()
 export const setOutput = jest.fn<typeof core.setOutput>()
 export const setFailed = jest.fn<typeof core.setFailed>()

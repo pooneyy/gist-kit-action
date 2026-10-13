@@ -1,8 +1,8 @@
 /**
  * `create` 操作：以 `files: { <name>: { content } }` 调用 POST /gists
  */
-import * as core from '@actions/core'
 import { readFile } from 'node:fs/promises'
+import type { Logger } from '../logger.js'
 import { basenameOf, apiFetch } from '../utils.js'
 import type { OperationResult, ResolvedInputs } from '../types.js'
 
@@ -10,7 +10,10 @@ interface CreatedGistResponse {
   id: string
 }
 
-export async function run(inputs: ResolvedInputs): Promise<OperationResult> {
+export async function run(
+  inputs: ResolvedInputs,
+  log: Logger
+): Promise<OperationResult> {
   if (!inputs.filenames || inputs.filenames.length === 0) {
     throw new Error('`filenames` is required for the create operation')
   }
@@ -20,7 +23,7 @@ export async function run(inputs: ResolvedInputs): Promise<OperationResult> {
     )
   }
 
-  core.debug(`Creating Gist with ${inputs.filenames.length} file(s)`)
+  log.debug(`Creating Gist with ${inputs.filenames.length} file(s)`)
 
   const files: Record<string, { content: string }> = {}
   for (const filePath of inputs.filenames) {
@@ -39,6 +42,6 @@ export async function run(inputs: ResolvedInputs): Promise<OperationResult> {
     body
   })
   const created = (await response.json()) as CreatedGistResponse
-  core.info(`Created Gist ${created.id}`)
+  log.info(`Created Gist ${created.id}`)
   return { newGistId: created.id }
 }

@@ -8,12 +8,15 @@
  *
  * 这里仅支持 "upsert" 子集；删除操作由独立的 delete-files.ts 处理。
  */
-import * as core from '@actions/core'
 import { readFile } from 'node:fs/promises'
+import type { Logger } from '../logger.js'
 import { basenameOf, apiFetch } from '../utils.js'
 import type { OperationResult, ResolvedInputs } from '../types.js'
 
-export async function run(inputs: ResolvedInputs): Promise<OperationResult> {
+export async function run(
+  inputs: ResolvedInputs,
+  log: Logger
+): Promise<OperationResult> {
   if (!inputs.gistId) {
     throw new Error('`gist-id` is required for the update operation')
   }
@@ -26,7 +29,7 @@ export async function run(inputs: ResolvedInputs): Promise<OperationResult> {
     )
   }
 
-  core.debug(
+  log.debug(
     `Updating Gist ${inputs.gistId} with ${inputs.filenames.length} file(s)`
   )
 
@@ -40,6 +43,6 @@ export async function run(inputs: ResolvedInputs): Promise<OperationResult> {
     token: inputs.token,
     body: { files }
   })
-  core.info(`Updated Gist ${inputs.gistId}`)
+  log.info(`Updated Gist ${inputs.gistId}`)
   return {}
 }

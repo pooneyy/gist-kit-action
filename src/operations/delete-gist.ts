@@ -3,11 +3,14 @@
  *
  * Gist API 成功时返回 204 No Content
  */
-import * as core from '@actions/core'
+import type { Logger } from '../logger.js'
 import { apiFetch } from '../utils.js'
 import type { OperationResult, ResolvedInputs } from '../types.js'
 
-export async function run(inputs: ResolvedInputs): Promise<OperationResult> {
+export async function run(
+  inputs: ResolvedInputs,
+  log: Logger
+): Promise<OperationResult> {
   if (!inputs.gistId) {
     throw new Error('`gist-id` is required for the delete-gist operation')
   }
@@ -17,11 +20,11 @@ export async function run(inputs: ResolvedInputs): Promise<OperationResult> {
     )
   }
 
-  core.debug(`Deleting Gist ${inputs.gistId}`)
+  log.debug(`Deleting Gist ${inputs.gistId}`)
   await apiFetch(`/gists/${encodeURIComponent(inputs.gistId)}`, {
     method: 'DELETE',
     token: inputs.token
   })
-  core.info(`Deleted Gist ${inputs.gistId}`)
+  log.info(`Deleted Gist ${inputs.gistId}`)
   return {}
 }

@@ -11,6 +11,7 @@
  */
 import * as core from '@actions/core'
 import * as glob from '@actions/glob'
+import { makeLogger } from './logger.js'
 import {
   basenameOf,
   expandFilenames,
@@ -25,10 +26,11 @@ import { run as updateRun } from './operations/update.js'
 import { run as downloadRun } from './operations/download.js'
 import { run as deleteFilesRun } from './operations/delete-files.js'
 import { run as deleteGistRun } from './operations/delete-gist.js'
+import type { Logger } from './logger.js'
 
 const HANDLERS: Record<
   ResolvedInputs['operation'],
-  (i: ResolvedInputs) => Promise<OperationResult>
+  (i: ResolvedInputs, log: Logger) => Promise<OperationResult>
 > = {
   create: createRun,
   update: updateRun,
@@ -49,12 +51,13 @@ export async function run(): Promise<void> {
     const operation = parseOperation(rawOperation)
     const token = resolveToken(rawToken)
     const logLevel = resolveLogLevel(rawLogLevel)
-    core.debug(`Resolved operation: ${operation}`)
-    core.debug(`Resolved log-level: ${logLevel}`)
-    core.debug(`Token present: ${token !== null}`)
-    if (rawGistId) core.debug(`Gist id: ${rawGistId}`)
+    const log = makeLogger(logLevel)
+    log.debug(`Resolved operation: ${operation}`)
+    log.debug(`Resolved log-level: ${logLevel}`)
+    log.debug(`Token present: ${token !== null}`)
+    if (rawGistId) log.debug(`Gist id: ${rawGistId}`)
     if (rawCreatePublic) {
-      core.debug(
+      log.debug(
         `create-public-gist=${rawCreatePublic} → ${parseBooleanStrict(rawCreatePublic)}`
       )
     }
@@ -109,7 +112,7 @@ export async function run(): Promise<void> {
       }
       case 'delete-gist': {
         if (rawFilenames.trim().length > 0) {
-          core.debug('Ignoring `filenames` for the delete-gist operation')
+          log.debug('Ignoring `filenames` for the delete-gist operation')
         }
         break
       }
@@ -120,7 +123,7 @@ export async function run(): Promise<void> {
     if (operation === 'create') {
       createPublic = parseBooleanStrict(rawCreatePublic)
     } else if (rawCreatePublic.trim().length > 0) {
-      core.debug(
+      log.debug(
         `Ignoring \`create-public-gist\` for the ${operation} operation`
       )
     }
@@ -135,7 +138,7 @@ export async function run(): Promise<void> {
     }
 
     const handler = HANDLERS[operation]
-    const result = await handler(inputs)
+    const result = await handler(inputs, log)
 
     // `create` 操作会产生新的 id，其他操作则原样回显传入的 id。
     const outputGistId = result.newGistId ?? rawGistId
