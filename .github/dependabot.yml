@@ -17,8 +17,12 @@ updates:
     groups:
       typescript-ecosystem:
         patterns:
-          - 'typescript'
-          - '@typescript*'
+          - typescript
+          - '@typescript-eslint/*'
+        update-types:
+          - major
+          - minor
+          - patch
       npm-development:
         dependency-type: development
         update-types:
