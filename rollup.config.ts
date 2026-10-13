@@ -20,7 +20,7 @@ const config = {
     commonjs(),
     terser({
       ecma: 2022,
-      format: { comments: true }
+      format: { comments: 'some' }
     })
   ]
 }
