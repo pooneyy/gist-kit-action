@@ -14,3 +14,6 @@ arrowParens: always
 proseWrap: always
 htmlWhitespaceSensitivity: css
 endOfLine: lf
+plugins:
+  - '@jaens/prettier-plugin-compact-markdown-table'
+tableLayout: standard

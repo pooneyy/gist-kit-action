@@ -1,25 +1,59 @@
-name: Gist Kit Action
+name: 'Gist Kit Action'
 description:
-  gist-kit-action is a multi-functional toolkit for interacting with Github Gist
-author: pooneyy
+  'A multi-functional toolkit for interacting with GitHub Gists (create, update,
+  download, delete files, delete gist).'
+author: 'pooneyy'
 
-# Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
-  icon: save
-  color: blue
+  icon: 'save'
+  color: 'blue'
 
-# Define your inputs here.
 inputs:
-  milliseconds:
-    description: Your input description here
-    required: true
-    default: '1000'
+  token:
+    description:
+      'Token with gist write permission. If empty, `$GITHUB_TOKEN` or
+      `$GH_TOKEN` is used. Ignored for the `download` operation.'
+    required: false
+    default: ''
+  gist-id:
+    description:
+      'Gist identifier. Required for update, download, delete-files, and
+      delete-gist. Ignored for create.'
+    required: false
+    default: ''
+  operation:
+    description:
+      'Operation to perform. One of `create`, `update`, `download`,
+      `delete-files`, `delete-gist`. Defaults to `download`.'
+    required: false
+    default: 'download'
+  create-public-gist:
+    description:
+      'Whether a newly-created gist should be public. Only the exact string
+      `true` (case-sensitive) is treated as true. Ignored for non-create
+      operations.'
+    required: false
+    default: 'false'
+  filenames:
+    description:
+      'Newline-separated list of local file paths (with glob support, mirroring
+      `actions/upload-artifact` `path`). Required for create, update,
+      delete-files; optional for download; ignored for delete-gist.'
+    required: false
+    default: ''
+  log-level:
+    description:
+      'Log level for the runner. One of `debug`, `info`, `warn`, `error`.
+      Defaults to `info`.'
+    required: false
+    default: 'info'
 
-# Define your outputs here.
 outputs:
-  time:
-    description: Your output description here
+  gist-id:
+    description:
+      'The resulting Gist id. For `create`, this is the newly-assigned id; for
+      all other operations it echoes the input `gist-id`.'
 
 runs:
-  using: node24
-  main: dist/index.js
+  using: 'node24'
+  main: 'dist/index.js'
