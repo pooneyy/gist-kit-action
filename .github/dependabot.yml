@@ -15,14 +15,6 @@ updates:
     schedule:
       interval: weekly
     groups:
-      typescript-ecosystem:
-        patterns:
-          - typescript
-          - '@typescript-eslint/*'
-        update-types:
-          - major
-          - minor
-          - patch
       npm-development:
         dependency-type: development
         update-types:
