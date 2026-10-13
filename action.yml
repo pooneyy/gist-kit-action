@@ -1,0 +1,25 @@
+name: Gist Kit Action
+description:
+  gist-kit-action is a multi-functional toolkit for interacting with Github Gist
+author: pooneyy
+
+# Add your action's branding here. This will appear on the GitHub Marketplace.
+branding:
+  icon: save
+  color: blue
+
+# Define your inputs here.
+inputs:
+  milliseconds:
+    description: Your input description here
+    required: true
+    default: '1000'
+
+# Define your outputs here.
+outputs:
+  time:
+    description: Your output description here
+
+runs:
+  using: node24
+  main: dist/index.js
