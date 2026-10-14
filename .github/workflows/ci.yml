@@ -1,0 +1,184 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  test-typescript:
+    name: TypeScript Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        id: setup-node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Install Dependencies
+        id: npm-ci
+        run: npm ci
+
+      - name: Check Format
+        id: npm-format-check
+        run: npm run format:check
+
+      - name: Lint
+        id: npm-lint
+        run: npm run lint
+
+      - name: Test
+        id: npm-ci-test
+        run: npm run ci-test
+
+  test-action:
+    name: GitHub Actions Test (${{ matrix.os }}, ${{ matrix.visibility }})
+    if: github.event_name == 'push'
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+        visibility:
+          - private
+          - public
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v7
+
+      - name: Write Test Files to Temp Directory
+        id: write-file
+        run: |
+          mkdir -p "${{ runner.temp }}/test"
+          date '+%Y-%m-%d %H:%M:%S' > "${{ runner.temp }}/test/test-time.txt"
+          echo "Hello, GitHub Actions!" > "${{ runner.temp }}/test/test-content.txt"
+
+      - name: Create ${{ matrix.visibility }} Gist (GITHUB_TOKEN Env)
+        id: test-create-gist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIST_WRITE_PERMISSION_TOKEN }}
+        uses: ./
+        with:
+          operation: create
+          create-public-gist:
+            ${{ matrix.visibility == 'public' && 'true' || '' }}
+          filenames: |
+            .github/README.md
+            ${{ runner.temp }}/test/*.txt
+
+      - name: Fetch Gist Metadata (1)
+        run: |
+          RESPONSE=$(curl -sS \
+            -H "Authorization: Bearer ${{ secrets.GIST_WRITE_PERMISSION_TOKEN }}" \
+            https://api.github.com/gists/${{ steps.test-create-gist.outputs.gist-id }})
+          ACTUAL=$(echo "$RESPONSE" | jq -r '.public')
+          EXPECTED=${{ matrix.visibility == 'public' && 'true' || 'false' }}
+          echo "public: $ACTUAL, expected $EXPECTED"
+          if [[ "$ACTUAL" != "$EXPECTED" ]]; then
+            echo "Expected .public to be '$EXPECTED' but got '$ACTUAL'" >&2
+            exit 1
+          fi
+          echo "created at: $(echo "$RESPONSE" | jq -r '.created_at')"
+          echo "updated at: $(echo "$RESPONSE" | jq -r '.updated_at')"
+          echo "files:"
+          echo "$RESPONSE" | jq -r '.files | keys[]' | sed 's/^/  - /'
+          echo "$RESPONSE" > "${{ runner.temp }}/test/gist-metadata.json"
+
+      - name: Download Gist File (GH_TOKEN Env)
+        id: test-download-gist
+        env:
+          GH_TOKEN: ${{ secrets.GIST_WRITE_PERMISSION_TOKEN }}
+        uses: ./
+        with:
+          operation: download
+          gist-id: ${{ steps.test-create-gist.outputs.gist-id }}
+          filenames: |
+            test-content.txt
+            ${{ runner.temp }}/test/with-token/*.txt
+
+      - name: Download Gist File (No Token)
+        id: test-download-gist-no-token
+        continue-on-error: true
+        uses: ./
+        with:
+          operation: download
+          gist-id: ${{ steps.test-create-gist.outputs.gist-id }}
+          filenames: |
+            test-time.txt
+            ${{ runner.temp }}/test/without-token/*.txt
+
+      - name: Read Downloaded Files
+        continue-on-error: true
+        run: |
+          cat test-time.txt
+          cat test-content.txt
+          ls -l ${{ runner.temp }}/test/with-token
+          ls -l ${{ runner.temp }}/test/without-token
+
+      - name: Add File to Gist
+        id: test-update-gist
+        uses: ./
+        with:
+          token: ${{ secrets.GIST_WRITE_PERMISSION_TOKEN }}
+          operation: update
+          gist-id: ${{ steps.test-create-gist.outputs.gist-id }}
+          filenames: |
+            ${{ runner.temp }}/test/gist-metadata.json
+
+      - name: Delete Files from Gist
+        id: delete-gist-files
+        uses: ./
+        with:
+          token: ${{ secrets.GIST_WRITE_PERMISSION_TOKEN }}
+          operation: delete-files
+          gist-id: ${{ steps.test-create-gist.outputs.gist-id }}
+          filenames: |
+            ${{ runner.temp }}/test/*.txt
+            .github/README.md
+
+      - name: Fetch Gist Metadata (2)
+        run: |
+          RESPONSE=$(curl -sS \
+            -H "Authorization: Bearer ${{ secrets.GIST_WRITE_PERMISSION_TOKEN }}" \
+            https://api.github.com/gists/${{ steps.test-create-gist.outputs.gist-id }})
+          echo "public: $(echo "$RESPONSE" | jq -r '.public')"
+          echo "created at: $(echo "$RESPONSE" | jq -r '.created_at')"
+          echo "updated at: $(echo "$RESPONSE" | jq -r '.updated_at')"
+          echo "files:"
+          echo "$RESPONSE" | jq -r '.files | keys[]' | sed 's/^/  - /'
+
+      - name: Delete Gist
+        id: delete-gist
+        if: always()
+        uses: ./
+        with:
+          token: ${{ secrets.GIST_WRITE_PERMISSION_TOKEN }}
+          operation: delete-gist
+          gist-id: ${{ steps.test-create-gist.outputs.gist-id }}
+
+      - name: Fetch Gist Metadata (3)
+        if: always()
+        run: |
+          curl -sS \
+            -H "Authorization: Bearer ${{ secrets.GIST_WRITE_PERMISSION_TOKEN }}" \
+            https://api.github.com/gists/${{ steps.test-create-gist.outputs.gist-id }}

@@ -1,0 +1,53 @@
+name: 'Gist Kit Action'
+description:
+  'A multi-functional toolkit for interacting with GitHub Gists (create, update,
+  download, delete files, delete gist).'
+author: 'pooneyy'
+
+branding:
+  icon: 'save'
+  color: 'blue'
+
+inputs:
+  token:
+    description:
+      'Token with gist write permission. If empty, `$GITHUB_TOKEN` or
+      `$GH_TOKEN` is used. Ignored for the `download` operation.'
+    required: false
+    default: ''
+  gist-id:
+    description:
+      'Gist identifier. Required for update, download, delete-files, and
+      delete-gist. Ignored for create.'
+    required: false
+    default: ''
+  operation:
+    description:
+      'Operation to perform. One of `create`, `update`, `download`,
+      `delete-files`, `delete-gist`. Defaults to `download`.'
+    required: false
+    default: 'download'
+  create-public-gist:
+    description:
+      'Whether a newly-created gist should be public. Only the exact string
+      `true` (case-sensitive) is treated as true. Ignored for non-create
+      operations.'
+    required: false
+    default: 'false'
+  filenames:
+    description:
+      'Newline-separated list of local file paths (with glob support, mirroring
+      `actions/upload-artifact` `path`). Required for create, update,
+      delete-files; optional for download; ignored for delete-gist.'
+    required: false
+    default: ''
+
+outputs:
+  gist-id:
+    description:
+      'The resulting Gist id. For `create`, this is the newly-assigned id; for
+      all other operations it echoes the input `gist-id`.'
+
+runs:
+  using: 'node24'
+  main: 'dist/index.js'
