@@ -43,3 +43,91 @@ jobs:
       - name: Test
         id: npm-ci-test
         run: npm run ci-test
+
+  test-action:
+    name: GitHub Actions Test (Environment Variables)
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GIST_WRITE_PERMISSION_TOKEN }}
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v7
+
+      - name: 往 tmp 目录写入文件
+        id: write-file
+        run: |
+          mkdir -p /tmp/test
+          echo $(date '+%Y-%m-%d %H:%M:%S') > /tmp/test/test-time.txt
+          echo 'Hello, GitHub Actions!' > /tmp/test/test-content.txt
+
+      - name: 创建私有 Gist
+        id: test-create-gist
+        uses: ./
+        with:
+          operation: create
+          filenames: |
+            README.md
+            /tmp/test/test-time.txt
+            /tmp/test/test-content.txt
+
+      - name: 获取 Gist 元数据 (1)
+        run: |
+          RESPONSE=$(curl -sS https://api.github.com/gists/${{ steps.test-create-gist.outputs.gist-id }})
+          echo "public: $(echo "$RESPONSE" | jq -r '.public')"
+          echo "created at: $(echo "$RESPONSE" | jq -r '.created_at')"
+          echo "updated at: $(echo "$RESPONSE" | jq -r '.updated_at')"
+          echo "files:"
+          echo "$RESPONSE" | jq -r '.files | keys[]' | sed 's/^/  - /'
+          echo "$RESPONSE" > /tmp/test/gist-metadata.json
+
+      - name: 下载 Gist 文件
+        id: test-download-gist
+        uses: ./
+        with:
+          operation: download
+          gist-id: ${{ steps.test-create-gist.outputs.gist-id }}
+          filenames: |
+            test-content.txt
+
+      - name: 读取测试文件 test-content.txt
+        run: cat test-content.txt
+
+      - name: 向 Gist 添加文件
+        id: test-update-gist
+        uses: ./
+        with:
+          operation: update
+          gist-id: ${{ steps.test-create-gist.outputs.gist-id }}
+          filenames: |
+            /tmp/test/gist-metadata.json
+
+      - name: 删除 Gist 中的文件
+        id: delete-gist-files
+        uses: ./
+        with:
+          operation: delete-files
+          gist-id: ${{ steps.test-create-gist.outputs.gist-id }}
+          filenames: |
+            /tmp/test/test-content.txt
+            README.md
+
+      - name: 获取 Gist 元数据 (2)
+        run: |
+          RESPONSE=$(curl -sS https://api.github.com/gists/${{ steps.test-create-gist.outputs.gist-id }})
+          echo "public: $(echo "$RESPONSE" | jq -r '.public')"
+          echo "created at: $(echo "$RESPONSE" | jq -r '.created_at')"
+          echo "updated at: $(echo "$RESPONSE" | jq -r '.updated_at')"
+          echo "files:"
+          echo "$RESPONSE" | jq -r '.files | keys[]' | sed 's/^/  - /'
+
+      - name: 删除 Gist
+        id: delete-gist
+        uses: ./
+        with:
+          operation: delete-gist
+          gist-id: ${{ steps.test-create-gist.outputs.gist-id }}
+
+      - name: 获取 Gist 元数据 (3)
+        run: |
+          curl -sS https://api.github.com/gists/${{ steps.test-create-gist.outputs.gist-id }}
