@@ -94,7 +94,7 @@ export async function expandFilenames(
 
 /** 以跨平台的方式提取路径的最后一段 */
 export function basenameOf(p: string): string {
-  return path.basename(p)
+  return path.win32.basename(p)
 }
 
 /**
