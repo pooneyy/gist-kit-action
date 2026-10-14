@@ -210,6 +210,25 @@ describe('main.ts dispatcher', () => {
     expect(body.files).toEqual({ 'a.md': null, 'b.md': null })
   })
 
+  it('delete-files: normalizes local paths to basenames before PATCH', async () => {
+    setInput('operation', 'delete-files')
+    setInput('token', 'gh_test')
+    setInput('gist-id', 'abc')
+    // When passing a local absolute path, you must use basename
+    // as the gist filename, otherwise PATCH /gists/{id} will return 422
+    // due to "malformed path components"
+    setInput('filenames', '/tmp/test/test-content.txt\nREADME.md')
+    mockFetch(200, {})
+
+    await run()
+    const [, init] = mocks.fetch.mock.calls[0] as [string, RequestInit]
+    const body = JSON.parse(init.body as string)
+    expect(body.files).toEqual({
+      'test-content.txt': null,
+      'README.md': null
+    })
+  })
+
   it('delete-gist: DELETEs the gist and echoes input id', async () => {
     setInput('operation', 'delete-gist')
     setInput('token', 'gh_test')

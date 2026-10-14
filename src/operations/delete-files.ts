@@ -3,7 +3,7 @@
  * 调用 PATCH /gists/{gist_id}
  */
 import type { Logger } from '../logger.js'
-import { apiFetch } from '../utils.js'
+import { apiFetch, basenameOf } from '../utils.js'
 import type { OperationResult, ResolvedInputs } from '../types.js'
 
 export async function run(
@@ -22,8 +22,8 @@ export async function run(
     )
   }
 
-  // 防御性地丢弃空行
-  const names = inputs.filenames.filter((n) => n.length > 0)
+  // 丢弃空行，并确保能从可能的传入的路径中获取文件名
+  const names = inputs.filenames.filter((n) => n.length > 0).map(basenameOf)
   const files: Record<string, null> = {}
   for (const name of names) files[name] = null
 

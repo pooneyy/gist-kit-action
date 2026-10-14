@@ -10,7 +10,7 @@
  */
 import { readFile } from 'node:fs/promises'
 import type { Logger } from '../logger.js'
-import { basenameOf, apiFetch } from '../utils.js'
+import { apiFetch, basenameOf } from '../utils.js'
 import type { OperationResult, ResolvedInputs } from '../types.js'
 
 export async function run(
