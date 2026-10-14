@@ -3,7 +3,6 @@
  *
  */
 import * as core from '@actions/core'
-import { Globber } from '@actions/glob'
 import * as path from 'node:path'
 import type { Logger } from './logger.js'
 import type { Operation, ResolvedInputs } from './types.js'
@@ -75,7 +74,9 @@ export function parseOperation(raw: string): Operation {
  */
 export async function expandFilenames(
   raw: string,
-  globberFactory: (patterns: string) => Promise<Globber>
+  globberFactory: (
+    patterns: string
+  ) => Promise<{ globGenerator: () => AsyncGenerator<string, void> }>
 ): Promise<string[]> {
   const patterns = raw
     .split('\n')
