@@ -2,7 +2,9 @@
 
 English | [中文](README_zh.md)
 
-A multi-functional GitHub Action for managing [GitHub Gists](https://gist.github.com) from a workflow. Supports creating, updating, downloading, deleting individual files, and deleting an entire Gist.
+A multi-functional GitHub Action for managing
+[GitHub Gists](https://gist.github.com) from a workflow. Supports creating,
+updating, downloading, deleting individual files, and deleting an entire Gist.
 
 ## Features
 

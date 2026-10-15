@@ -2,7 +2,8 @@
 
 [English](README.md) | 中文
 
-一个多功能的 GitHub Action，用于在 workflow 中管理 [GitHub Gists](https://gist.github.com)。支持创建、更新、下载、删除单个文件以及删除整个 Gist。
+一个多功能的 GitHub Action，用于在 workflow 中管理
+[GitHub Gists](https://gist.github.com)。支持创建、更新、下载、删除单个文件以及删除整个 Gist。
 
 ## 功能特性
 
@@ -13,7 +14,9 @@
 - **删除** Gist 中的单个文件。
 - **删除** 整个 Gist。
 - 如果未提供 token，则回退使用 `$GITHUB_TOKEN` / `$GH_TOKEN`。
-- 文件名使用与 [`actions/upload-artifact`](https://github.com/actions/upload-artifact) 相同的 `path` 语义，换行分隔列表，支持 glob。
+- 文件名使用与
+  [`actions/upload-artifact`](https://github.com/actions/upload-artifact) 相同的
+  `path` 语义，换行分隔列表，支持 glob。
 
 <!-- prettier-ignore-start -->
 
@@ -129,7 +132,8 @@ npm install
 npm test
 ```
 
-使用以下命令将 TypeScript 源码打包为 `dist/index.js` (GitHub Actions实际执行的文件):
+使用以下命令将 TypeScript 源码打包为 `dist/index.js` (GitHub
+Actions实际执行的文件):
 
 ```bash
 npm run bundle
