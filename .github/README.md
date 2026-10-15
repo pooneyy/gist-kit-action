@@ -1,10 +1,8 @@
 # Gist Kit Action
 
-<!-- prettier-ignore-start -->
 English | [中文](README_zh.md)
 
 A multi-functional GitHub Action for managing [GitHub Gists](https://gist.github.com) from a workflow. Supports creating, updating, downloading, deleting individual files, and deleting an entire Gist.
-<!-- prettier-ignore-end -->
 
 ## Features
 
@@ -19,10 +17,12 @@ A multi-functional GitHub Action for managing [GitHub Gists](https://gist.github
   [`actions/upload-artifact`](https://github.com/actions/upload-artifact),
   newline-separated list, glob support.
 
+<!-- prettier-ignore-start -->
+
 ## Inputs
 
 | Name | Required | Default | Description |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `token` | No | _(empty)_ | Token with gist write permission. If empty, `$GITHUB_TOKEN` or `$GH_TOKEN` is used. Required for all write operations; optional for `download` (Only used for metadata retrieval, downloads are always anonymous. The personal access token does not require any permissions.). |
 | `gist-id` | No | _(empty)_ | Gist identifier. Required for `update`, `download`, `delete-files`, `delete-gist`. Ignored for `create`. |
 | `operation` | No | `download` | One of `create`, `update`, `download`, `delete-files`, `delete-gist`. Unknown values fail the action. |
@@ -32,8 +32,10 @@ A multi-functional GitHub Action for managing [GitHub Gists](https://gist.github
 ## Outputs
 
 | Name | Description |
-|---|---|
+| --- | --- |
 | `gist-id` | The resulting Gist id. For `create`, this is the newly-assigned id; for all other operations, it echoes the input `gist-id`. |
+
+<!-- prettier-ignore-end -->
 
 ## Usage
 

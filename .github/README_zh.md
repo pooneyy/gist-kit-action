@@ -2,8 +2,6 @@
 
 [English](README.md) | 中文
 
-<!-- prettier-ignore-start -->
-
 一个多功能的 GitHub Action，用于在 workflow 中管理 [GitHub Gists](https://gist.github.com)。支持创建、更新、下载、删除单个文件以及删除整个 Gist。
 
 ## 功能特性
@@ -17,12 +15,12 @@
 - 如果未提供 token，则回退使用 `$GITHUB_TOKEN` / `$GH_TOKEN`。
 - 文件名使用与 [`actions/upload-artifact`](https://github.com/actions/upload-artifact) 相同的 `path` 语义，换行分隔列表，支持 glob。
 
-<!-- prettier-ignore-end -->
+<!-- prettier-ignore-start -->
 
 ## Inputs（输入参数）
 
 | 名称 | 是否必填 | 默认值 | 说明 |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `token` | 否 | _(空)_ | 拥有 gist 写权限的 token。若为空，则使用 `$GITHUB_TOKEN` 或 `$GH_TOKEN`。所有写操作均必填；`download` 可选（仅用于获取元数据，下载始终为匿名请求，个人访问令牌无需任何权限）。 |
 | `gist-id` | 否 | _(空)_ | Gist 标识符。`update`、`download`、`delete-files`、`delete-gist` 操作必填。`create` 操作忽略此参数。 |
 | `operation` | 否 | `download` | 之一：`create`、`update`、`download`、`delete-files`、`delete-gist`。传入未知值将导致 action 失败。 |
@@ -32,8 +30,10 @@
 ## Outputs（输出参数）
 
 | 名称 | 说明 |
-|---|---|
+| --- | --- |
 | `gist-id` | 生成的 Gist id。`create` 操作为新分配的 id；其他所有操作会原样回显输入的 `gist-id`。 |
+
+<!-- prettier-ignore-end -->
 
 ## 使用方法
 
@@ -109,8 +109,6 @@
     gist-id: ${{ steps.create.outputs.gist-id }}
 ```
 
-<!-- prettier-ignore-start -->
-
 ## 行为细节
 
 - **`create-public-gist` 区分大小写。** 仅当字符串完全等于 `true` 时视为
@@ -136,8 +134,6 @@ npm test
 ```bash
 npm run bundle
 ```
-
-<!-- prettier-ignore-end -->
 
 ## 许可证
 
