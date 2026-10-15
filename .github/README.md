@@ -133,9 +133,6 @@ updating, downloading, deleting individual files, and deleting an entire Gist.
   components from each entry before matching against Gist file names. The
   original entry is used as the destination path on disk, so `/tmp/hello.txt`
   writes to `/tmp/hello.txt` after matching the Gist file `hello.txt`.
-- **`download` authentication.** The metadata call (`GET /gists/{id}`) uses the
-  supplied `token` when available and falls back to an anonymous request
-  otherwise.
 
 ## Development
 

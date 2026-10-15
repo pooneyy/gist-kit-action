@@ -122,8 +122,6 @@
 - **`download` 操作的 `filenames` 匹配**
   会先去除每条记录的前导目录部分，然后再与 Gist 文件名匹配。原始记录会用作磁盘上的目标路径，因此
   `/tmp/hello.txt` 在匹配到 Gist 文件 `hello.txt` 后会写入到 `/tmp/hello.txt`。
-- **`download` 鉴权。** 元数据调用（`GET /gists/{id}`）在提供 `token`
-  时会使用该 token，否则回退为匿名请求。
 
 ## 开发
 
