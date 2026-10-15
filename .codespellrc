@@ -1,2 +1,3 @@
 [codespell]
 ignore-words-list = afterAll,afterEach,beforeAll,beforeEach
+exclude-file = package-lock.json
