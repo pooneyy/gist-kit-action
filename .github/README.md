@@ -22,7 +22,7 @@ updating, downloading, deleting individual files, and deleting an entire Gist.
     from actions, because the token doesn't have permission to access Gist.
 - **Delete** individual files from a Gist.
 - **Delete** an entire Gist.
-- Token falls back to `$GITHUB_TOKEN` / `$GH_TOKEN` if not provided.
+- If no token is explicitly provided, it attempts to obtain the token from the environment variables `$GITHUB_TOKEN` / `$GH_TOKEN`.
 - Filenames use the same `path` semantics as
   [`actions/upload-artifact`](https://github.com/actions/upload-artifact),
   newline-separated list, glob support.
@@ -62,7 +62,7 @@ updating, downloading, deleting individual files, and deleting an entire Gist.
       build/output.txt
       dist/bundle.js
       /path/to/config/*.json
-    create-public-gist: 'true'
+    create-public-gist: true
 # gist-id is now available as ${{ steps.create.outputs.gist-id }}
 ```
 

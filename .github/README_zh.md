@@ -16,7 +16,7 @@
     [`${{ github.token }}`](https://docs.github.com/zh/actions/tutorials/authenticate-with-github_token)，这个 token 没有权限访问 Gist。
 - **删除** Gist 中的单个文件。
 - **删除** 整个 Gist。
-- 如果未提供 token，则回退使用 `$GITHUB_TOKEN` / `$GH_TOKEN`。
+- 如果未显式传入 token，则尝试从环境变量 `$GITHUB_TOKEN` / `$GH_TOKEN` 获取 token。
 - 文件名使用与
   [`actions/upload-artifact`](https://github.com/actions/upload-artifact) 相同的
   `path` 语义，换行分隔列表，支持 glob。
@@ -56,7 +56,7 @@
       build/output.txt
       dist/bundle.js
       /path/to/config/*.json
-    create-public-gist: 'true'
+    create-public-gist: true
 # gist-id 现在可以通过 ${{ steps.create.outputs.gist-id }} 获取
 ```
 
