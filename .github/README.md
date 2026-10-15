@@ -38,13 +38,13 @@ updating, downloading, deleting individual files, and deleting an entire Gist.
 | `gist-id` | No | _(empty)_ | Gist identifier. Required for `update`, `download`, `delete-files`, `delete-gist`. Ignored for `create`. |
 | `operation` | No | `download` | One of `create`, `update`, `download`, `delete-files`, `delete-gist`. Unknown values fail the action. |
 | `create-public-gist` | No | `false` | Whether a newly-created Gist should be public. Only the exact string `true` (case-sensitive) is treated as `true`. Ignored for non-create operations. |
-| `filenames` | No | _(empty)_ | Newline-separated list of file names. Required for `create`, `update`, `delete-files`; optional for `download`; ignored for `delete-gist`. |
+| `filenames` | No | _(empty)_ | Newline-separated list of filenames. Required for `create`, `update`, `delete-files`; optional for `download`; ignored for `delete-gist`. |
 
 ## Outputs
 
 | Name | Description |
 | --- | --- |
-| `gist-id` | The resulting Gist id. For `create`, this is the newly-assigned id; for all other operations, it echoes the input `gist-id`. |
+| `gist-id` | The resulting Gist ID. For `create`, this is the newly-assigned ID; for all other operations, it echoes the input `gist-id`. |
 
 <!-- prettier-ignore-end -->
 
@@ -130,7 +130,7 @@ updating, downloading, deleting individual files, and deleting an entire Gist.
   treated as `true`. Any other value (including `True`, `1`, `yes`, or empty)
   maps to `false` (private Gist).
 - **`filenames` matching for `download`** strips the leading directory
-  components from each entry before matching against Gist file names. The
+  components from each entry before matching against Gist filenames. The
   original entry is used as the destination path on disk, so `/tmp/hello.txt`
   writes to `/tmp/hello.txt` after matching the Gist file `hello.txt`.
 

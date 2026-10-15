@@ -1,5 +1,7 @@
 # See: https://github.com/DavidAnson/markdownlint
 
+default: warning
+
 # Unordered list style
 MD004:
   style: dash

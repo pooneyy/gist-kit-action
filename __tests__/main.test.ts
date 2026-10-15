@@ -236,7 +236,7 @@ describe('main.ts dispatcher', () => {
     ).toBeUndefined()
   })
 
-  it('download: expands glob patterns against Gist file names', async () => {
+  it('download: expands glob patterns against Gist filenames', async () => {
     setInput('operation', 'download')
     setInput('gist-id', 'abc')
     // `out/*.txt` should download every Gist file ending in `.txt` into `out/`.
@@ -356,7 +356,7 @@ describe('main.ts dispatcher', () => {
     })
   })
 
-  it('delete-files: expands glob patterns against Gist file names', async () => {
+  it('delete-files: expands glob patterns against Gist filenames', async () => {
     setInput('operation', 'delete-files')
     setInput('token', 'gh_test')
     setInput('gist-id', 'abc')
