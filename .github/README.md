@@ -10,8 +10,9 @@ updating, downloading, deleting individual files, and deleting an entire Gist.
 
 - **Create** a Gist from one or more local files.
 - **Update** an existing Gist by upserting files.
-- **Download** files from a Gist (anonymously by default; a token is optional
-  and only used to authenticate the metadata request).
+- **Download** files from a Gist.
+  - Supports anonymous requests;
+  - You can optionally pass a token, which you can use for authentication of metadata requests when you encounter REST API rate limits. This token doesn't require any permissions, but it must be a [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token), [apply for one here](https://github.com/settings/tokens). You cannot use the built-in [`${{ github.token }}`](https://docs.github.com/en/actions/tutorials/authenticate-with-github_token) from actions, because the token doesn't have permission to access Gist.
 - **Delete** individual files from a Gist.
 - **Delete** an entire Gist.
 - Token falls back to `$GITHUB_TOKEN` / `$GH_TOKEN` if not provided.
