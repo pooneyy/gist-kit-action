@@ -51,8 +51,10 @@ jobs:
 
       # This will fail the workflow if the `dist/` directory is different than
       # expected.
+      # If github.actor is a robot, skip the dist directory comparison check.
       - name: Compare Directories
         id: diff
+        if: ${{ !endsWith(github.actor, '[bot]') }}
         run: |
           if [ ! -d dist/ ]; then
             echo "Expected dist/ directory does not exist.  See status below:"
