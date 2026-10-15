@@ -16,7 +16,7 @@
     [`${{ github.token }}`](https://docs.github.com/zh/actions/tutorials/authenticate-with-github_token)，这个 token 没有权限访问 Gist。
 - **删除** Gist 中的单个文件。
 - **删除** 整个 Gist。
-- 如果未显式传入 token，则尝试从环境变量 `$GITHUB_TOKEN` / `$GH_TOKEN` 获取 token。
+- 若未显式传入 token，则从环境变量 `$GITHUB_TOKEN` `$GH_TOKEN` 获取 token。
 - 文件名使用与
   [`actions/upload-artifact`](https://github.com/actions/upload-artifact) 相同的
   `path` 语义，换行分隔列表，支持 glob。
@@ -115,11 +115,10 @@
     gist-id: ${{ steps.create.outputs.gist-id }}
 ```
 
-## 行为细节
+## 附注
 
 - **`create-public-gist` 区分大小写。** 仅当字符串完全等于 `true` 时视为
-  `true`。任何其他值（包括 `True`、`1`、`yes` 或空）都视为
-  `false`（私有 Gist）。
+  `true`。任何其他值（包括 `True`、`1`、`yes` 或空）都视为 `false`(私有 Gist)。
 - **`download` 操作的 `filenames` 匹配**
   会先去除每条记录的前导目录部分，然后再与 Gist 文件名匹配。原始记录会用作磁盘上的目标路径，因此
   `/tmp/hello.txt` 在匹配到 Gist 文件 `hello.txt` 后会写入到 `/tmp/hello.txt`。
