@@ -11,7 +11,9 @@
 - **更新** 已存在的 Gist：通过 upsert 文件的方式。
 - **下载** Gist 中的文件。
   - 支持匿名请求；
-  - 可选传入 token, 当你遇到 REST API 的速率限制时可以使用 token 用于元数据请求的鉴权，这个 token 不需要任何权限，但必须是[个人访问令牌](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)，[在此处申请](https://github.com/settings/tokens)。不能使用 actions 自带的 [`${{ github.token }}`](https://docs.github.com/zh/actions/tutorials/authenticate-with-github_token)，这个 token 没有权限访问 Gist。
+  - 可选传入 token, 当你遇到 REST
+    API 的速率限制时可以使用 token 用于元数据请求的鉴权，这个 token 不需要任何权限，但必须是[个人访问令牌](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)，[在此处申请](https://github.com/settings/tokens)。不能使用 actions 自带的
+    [`${{ github.token }}`](https://docs.github.com/zh/actions/tutorials/authenticate-with-github_token)，这个 token 没有权限访问 Gist。
 - **删除** Gist 中的单个文件。
 - **删除** 整个 Gist。
 - 如果未提供 token，则回退使用 `$GITHUB_TOKEN` / `$GH_TOKEN`。
